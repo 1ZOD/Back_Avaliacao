@@ -1,0 +1,24 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "./prisma/client"
+}
+
+model Calendario {
+  id    Int    @id @default(autoincrement())
+  data  DateTime
+  tarefas Tarefa[]
+  @@map("calendario")
+}
+
+model Tarefa {
+  id          Int       @id @default(autoincrement())
+  descricao   String
+  data_id     Int
+  calendario  Calendario @relation(fields: [data_id], references: [id])
+@@map("tarefa")
+}
