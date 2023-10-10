@@ -8,46 +8,74 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AppController = void 0;
 const common_1 = require("@nestjs/common");
 const app_service_1 = require("./app.service");
 const prisma_service_1 = require("./database/prisma.service");
+const controller_model_1 = require("./model/controller_model");
 let AppController = class AppController {
     constructor(appService, prisma) {
         this.appService = appService;
         this.prisma = prisma;
     }
-    teste() {
+    async empty_page() {
         return this.appService.getHello();
     }
-    async teste2() {
-        const dataFormatoOriginal = new Date('10-10-2023');
-        const dataFormatoISO = dataFormatoOriginal.toISOString();
-        const member = await this.prisma.calendario.create({
-            data: {
-                id: 123,
-                data: dataFormatoISO,
+    async cadastrar_habito(data) {
+        const calendarioExistente = await this.prisma.calendario.findFirst({
+            where: {
+                dia: data.dia,
             },
         });
-        return {
-            member,
-        };
+        if (calendarioExistente) {
+            const novaTarefa = await this.prisma.tarefa.create({
+                data: {
+                    tarefa: 'Tarefa 1',
+                    status: 'Em andamento',
+                    calendario: { connect: { id: calendarioExistente.id } },
+                },
+            });
+            return {
+                novaTarefa,
+            };
+        }
+        else {
+            const task = await this.prisma.calendario.create({
+                data: {
+                    dia: data.dia,
+                },
+            });
+            const novaTarefa = await this.prisma.tarefa.create({
+                data: {
+                    tarefa: 'Tarefa 1',
+                    status: 'Em andamento',
+                    calendario: { connect: { id: task.id } },
+                },
+            });
+            return {
+                novaTarefa,
+            };
+        }
     }
 };
 exports.AppController = AppController;
 __decorate([
-    (0, common_1.Get)('aaa'),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", String)
-], AppController.prototype, "teste", null);
-__decorate([
-    (0, common_1.Get)('bbb'),
+    (0, common_1.Get)(),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
-], AppController.prototype, "teste2", null);
+], AppController.prototype, "empty_page", null);
+__decorate([
+    (0, common_1.Post)('cadastrar_habito'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [controller_model_1.Cadastrar_habito]),
+    __metadata("design:returntype", Promise)
+], AppController.prototype, "cadastrar_habito", null);
 exports.AppController = AppController = __decorate([
     (0, common_1.Controller)(),
     __metadata("design:paramtypes", [app_service_1.AppService,
