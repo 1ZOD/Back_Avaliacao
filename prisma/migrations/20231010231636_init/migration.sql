@@ -1,7 +1,7 @@
 -- CreateTable
 CREATE TABLE "calendario" (
     "id" SERIAL NOT NULL,
-    "data" TIMESTAMP(3) NOT NULL,
+    "dia" INTEGER NOT NULL,
 
     CONSTRAINT "calendario_pkey" PRIMARY KEY ("id")
 );
@@ -9,8 +9,9 @@ CREATE TABLE "calendario" (
 -- CreateTable
 CREATE TABLE "tarefa" (
     "id" SERIAL NOT NULL,
-    "descricao" TEXT NOT NULL,
+    "tarefa" TEXT NOT NULL,
     "data_id" INTEGER NOT NULL,
+    "status" TEXT NOT NULL,
 
     CONSTRAINT "tarefa_pkey" PRIMARY KEY ("id")
 );

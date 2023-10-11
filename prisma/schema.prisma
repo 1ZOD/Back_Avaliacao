@@ -8,16 +8,19 @@ generator client {
 }
 
 model Calendario {
-  id    Int    @id @default(autoincrement())
-  data  DateTime
+  id    Int     @id @default(autoincrement())
+  dia   Int
   tarefas Tarefa[]
   @@map("calendario")
 }
 
 model Tarefa {
-  id          Int       @id @default(autoincrement())
-  descricao   String
-  data_id     Int
-  calendario  Calendario @relation(fields: [data_id], references: [id])
+  id      Int     @id @default(autoincrement())
+  tarefa  String
+  data_id Int 
+  status  String
+  calendario Calendario @relation(fields: [data_id], references: [id])
   @@map("tarefa")
 }
+
+

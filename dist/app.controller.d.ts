@@ -1,14 +1,30 @@
 import { AppService } from './app.service';
 import { PrismaService } from './database/prisma.service';
+import { Cadastrar_habito } from './model/controller_model';
 export declare class AppController {
     private readonly appService;
     private prisma;
     constructor(appService: AppService, prisma: PrismaService);
-    teste(): string;
-    teste2(): Promise<{
-        member: {
+    empty_page(): Promise<string>;
+    buscarItensPorDia(dia: string): Promise<{
+        id: number;
+        tarefa: string;
+        data_id: number;
+        status: string;
+    }[]>;
+    cadastrar_habito(data: Cadastrar_habito): Promise<{
+        novaTarefa: {
             id: number;
-            data: Date;
+            tarefa: string;
+            data_id: number;
+            status: string;
         };
+    }>;
+    excluirTarefaPorDia(dia: string, id: string): Promise<{
+        message: string;
+        error?: undefined;
+    } | {
+        error: string;
+        message: string;
     }>;
 }
