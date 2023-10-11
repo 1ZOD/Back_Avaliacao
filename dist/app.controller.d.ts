@@ -6,6 +6,12 @@ export declare class AppController {
     private prisma;
     constructor(appService: AppService, prisma: PrismaService);
     empty_page(): Promise<string>;
+    buscarItensPorDia(dia: string): Promise<{
+        id: number;
+        tarefa: string;
+        data_id: number;
+        status: string;
+    }[]>;
     cadastrar_habito(data: Cadastrar_habito): Promise<{
         novaTarefa: {
             id: number;

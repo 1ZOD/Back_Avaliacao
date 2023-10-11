@@ -25,6 +25,20 @@ let AppController = class AppController {
     async empty_page() {
         return this.appService.getHello();
     }
+    async buscarItensPorDia(dia) {
+        const numeroDoDia = parseInt(dia);
+        if (isNaN(numeroDoDia)) {
+            throw new Error('Dia inválido.');
+        }
+        const itensDoDia = await this.prisma.tarefa.findMany({
+            where: {
+                calendario: {
+                    dia: numeroDoDia,
+                },
+            },
+        });
+        return itensDoDia;
+    }
     async cadastrar_habito(data) {
         const calendarioExistente = await this.prisma.calendario.findFirst({
             where: {
@@ -69,6 +83,13 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], AppController.prototype, "empty_page", null);
+__decorate([
+    (0, common_1.Get)(':dia'),
+    __param(0, (0, common_1.Param)('dia')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], AppController.prototype, "buscarItensPorDia", null);
 __decorate([
     (0, common_1.Post)('cadastrar_habito'),
     __param(0, (0, common_1.Body)()),

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param } from '@nestjs/common';
 import { AppService } from './app.service';
 import { PrismaService } from './database/prisma.service';
 import { Cadastrar_habito } from './model/controller_model';
@@ -15,9 +15,24 @@ export class AppController {
     return this.appService.getHello();
   }
 
+  @Get(':dia')
+  async buscarItensPorDia(@Param('dia') dia: string) {
+    const numeroDoDia = parseInt(dia);
+    if (isNaN(numeroDoDia)) {
+      throw new Error('Dia inválido.');
+    }
+    const itensDoDia = await this.prisma.tarefa.findMany({
+      where: {
+        calendario: {
+          dia: numeroDoDia,
+        },
+      },
+    });
+    return itensDoDia;
+  }
+
   @Post('cadastrar_habito')
   async cadastrar_habito(@Body() data: Cadastrar_habito) {
-    // Verifique se o Calendario com o dia já existe
     const calendarioExistente = await this.prisma.calendario.findFirst({
       where: {
         dia: data.dia,
@@ -25,11 +40,10 @@ export class AppController {
     });
 
     if (calendarioExistente) {
-      // Se o Calendario já existe, crie apenas a Tarefa
       const novaTarefa = await this.prisma.tarefa.create({
         data: {
           tarefa: 'Tarefa 1',
-          status: 'Em andamento', // Defina o status desejado
+          status: 'Em andamento',
           calendario: { connect: { id: calendarioExistente.id } },
         },
       });
