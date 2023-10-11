@@ -20,4 +20,11 @@ export declare class AppController {
             status: string;
         };
     }>;
+    excluirTarefaPorDia(dia: string, id: string): Promise<{
+        message: string;
+        error?: undefined;
+    } | {
+        error: string;
+        message: string;
+    }>;
 }

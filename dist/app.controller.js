@@ -75,6 +75,27 @@ let AppController = class AppController {
             };
         }
     }
+    async excluirTarefaPorDia(dia, id) {
+        const numeroDoDia = parseInt(dia);
+        const numeroDoId = parseInt(id);
+        if (isNaN(numeroDoDia) || isNaN(numeroDoId)) {
+            throw new Error('Dia ou ID inválido.');
+        }
+        try {
+            await this.prisma.tarefa.delete({
+                where: {
+                    id: numeroDoId,
+                },
+            });
+            return { message: 'Tarefa excluída com sucesso' };
+        }
+        catch (error) {
+            return {
+                error: 'Erro ao excluir a tarefa',
+                message: 'Tarefa não encontrada',
+            };
+        }
+    }
 };
 exports.AppController = AppController;
 __decorate([
@@ -84,7 +105,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AppController.prototype, "empty_page", null);
 __decorate([
-    (0, common_1.Get)(':dia'),
+    (0, common_1.Get)('dia/:dia'),
     __param(0, (0, common_1.Param)('dia')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
@@ -97,6 +118,14 @@ __decorate([
     __metadata("design:paramtypes", [controller_model_1.Cadastrar_habito]),
     __metadata("design:returntype", Promise)
 ], AppController.prototype, "cadastrar_habito", null);
+__decorate([
+    (0, common_1.Delete)('excluir/:dia/:id'),
+    __param(0, (0, common_1.Param)('dia')),
+    __param(1, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:returntype", Promise)
+], AppController.prototype, "excluirTarefaPorDia", null);
 exports.AppController = AppController = __decorate([
     (0, common_1.Controller)(),
     __metadata("design:paramtypes", [app_service_1.AppService,

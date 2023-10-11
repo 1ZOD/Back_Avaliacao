@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete } from '@nestjs/common';
 import { AppService } from './app.service';
 import { PrismaService } from './database/prisma.service';
 import { Cadastrar_habito } from './model/controller_model';
@@ -15,7 +15,7 @@ export class AppController {
     return this.appService.getHello();
   }
 
-  @Get(':dia')
+  @Get('dia/:dia')
   async buscarItensPorDia(@Param('dia') dia: string) {
     const numeroDoDia = parseInt(dia);
     if (isNaN(numeroDoDia)) {
@@ -52,7 +52,6 @@ export class AppController {
         novaTarefa,
       };
     } else {
-      // Se o Calendario não existe, crie-o e, em seguida, crie a Tarefa
       const task = await this.prisma.calendario.create({
         data: {
           dia: data.dia,
@@ -73,20 +72,29 @@ export class AppController {
     }
   }
 
-  // @Get('bbb')
-  // async teste2() {
-  //   const dataFormatoOriginal = new Date('10-10-2023');
-  //   const dataFormatoISO = dataFormatoOriginal.toISOString();
+  @Delete('excluir/:dia/:id')
+  async excluirTarefaPorDia(
+    @Param('dia') dia: string,
+    @Param('id') id: string,
+  ) {
+    const numeroDoDia = parseInt(dia);
+    const numeroDoId = parseInt(id);
 
-  //   const member = await this.prisma.calendario.create({
-  //     data: {
-  //       id: 123,
-  //       data: dataFormatoISO,
-  //     },
-  //   });
-
-  //   return {
-  //     member,
-  //   };
-  // }
+    if (isNaN(numeroDoDia) || isNaN(numeroDoId)) {
+      throw new Error('Dia ou ID inválido.');
+    }
+    try {
+      await this.prisma.tarefa.delete({
+        where: {
+          id: numeroDoId,
+        },
+      });
+      return { message: 'Tarefa excluída com sucesso' };
+    } catch (error) {
+      return {
+        error: 'Erro ao excluir a tarefa',
+        message: 'Tarefa não encontrada',
+      };
+    }
+  }
 }
