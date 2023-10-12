@@ -9,7 +9,7 @@ generator client {
 
 model Calendario {
   id    Int     @id @default(autoincrement())
-  dia   Int
+  dia   String
   tarefas Tarefa[]
   @@map("calendario")
 }

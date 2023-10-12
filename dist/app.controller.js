@@ -25,15 +25,12 @@ let AppController = class AppController {
     async empty_page() {
         return this.appService.getHello();
     }
-    async buscarItensPorDia(dia) {
-        const numeroDoDia = parseInt(dia);
-        if (isNaN(numeroDoDia)) {
-            throw new Error('Dia inválido.');
-        }
+    async buscarItensPorDia2(body) {
+        const dia = body.dia;
         const itensDoDia = await this.prisma.tarefa.findMany({
             where: {
                 calendario: {
-                    dia: numeroDoDia,
+                    dia: dia,
                 },
             },
         });
@@ -48,8 +45,8 @@ let AppController = class AppController {
         if (calendarioExistente) {
             const novaTarefa = await this.prisma.tarefa.create({
                 data: {
-                    tarefa: 'Tarefa 1',
-                    status: 'Em andamento',
+                    tarefa: data.tarefa,
+                    status: data.status,
                     calendario: { connect: { id: calendarioExistente.id } },
                 },
             });
@@ -65,8 +62,8 @@ let AppController = class AppController {
             });
             const novaTarefa = await this.prisma.tarefa.create({
                 data: {
-                    tarefa: 'Tarefa 1',
-                    status: 'Em andamento',
+                    tarefa: data.tarefa,
+                    status: data.status,
                     calendario: { connect: { id: task.id } },
                 },
             });
@@ -105,12 +102,12 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AppController.prototype, "empty_page", null);
 __decorate([
-    (0, common_1.Get)('dia/:dia'),
-    __param(0, (0, common_1.Param)('dia')),
+    (0, common_1.Post)('dia'),
+    __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
-], AppController.prototype, "buscarItensPorDia", null);
+], AppController.prototype, "buscarItensPorDia2", null);
 __decorate([
     (0, common_1.Post)('cadastrar_habito'),
     __param(0, (0, common_1.Body)()),

@@ -6,7 +6,9 @@ export declare class AppController {
     private prisma;
     constructor(appService: AppService, prisma: PrismaService);
     empty_page(): Promise<string>;
-    buscarItensPorDia(dia: string): Promise<{
+    buscarItensPorDia2(body: {
+        dia: string;
+    }): Promise<{
         id: number;
         tarefa: string;
         data_id: number;

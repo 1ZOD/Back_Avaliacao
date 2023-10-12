@@ -15,16 +15,13 @@ export class AppController {
     return this.appService.getHello();
   }
 
-  @Get('dia/:dia')
-  async buscarItensPorDia(@Param('dia') dia: string) {
-    const numeroDoDia = parseInt(dia);
-    if (isNaN(numeroDoDia)) {
-      throw new Error('Dia inválido.');
-    }
+  @Post('dia')
+  async buscarItensPorDia2(@Body() body: { dia: string }) {
+    const dia = body.dia;
     const itensDoDia = await this.prisma.tarefa.findMany({
       where: {
         calendario: {
-          dia: numeroDoDia,
+          dia: dia,
         },
       },
     });
@@ -42,8 +39,8 @@ export class AppController {
     if (calendarioExistente) {
       const novaTarefa = await this.prisma.tarefa.create({
         data: {
-          tarefa: 'Tarefa 1',
-          status: 'Em andamento',
+          tarefa: data.tarefa,
+          status: data.status,
           calendario: { connect: { id: calendarioExistente.id } },
         },
       });
@@ -60,8 +57,8 @@ export class AppController {
 
       const novaTarefa = await this.prisma.tarefa.create({
         data: {
-          tarefa: 'Tarefa 1',
-          status: 'Em andamento',
+          tarefa: data.tarefa,
+          status: data.status,
           calendario: { connect: { id: task.id } },
         },
       });

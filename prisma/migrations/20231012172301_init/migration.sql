@@ -1,7 +1,7 @@
 -- CreateTable
 CREATE TABLE "calendario" (
     "id" SERIAL NOT NULL,
-    "dia" INTEGER NOT NULL,
+    "dia" TEXT NOT NULL,
 
     CONSTRAINT "calendario_pkey" PRIMARY KEY ("id")
 );

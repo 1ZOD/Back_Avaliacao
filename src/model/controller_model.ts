@@ -1,5 +1,5 @@
 export class Cadastrar_habito {
-  readonly dia: number;
-  readonly task: string;
-  readonly status: Date;
+  readonly dia: string;
+  readonly tarefa: string;
+  readonly status: string;
 }
