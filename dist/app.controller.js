@@ -26,11 +26,11 @@ let AppController = class AppController {
         return this.appService.getHello();
     }
     async buscarItensPorDia2(body) {
-        const dia = body.dia;
+        const data_inicio = body.data_inicio;
         const itensDoDia = await this.prisma.tarefa.findMany({
             where: {
                 calendario: {
-                    dia: dia,
+                    data_inicio: data_inicio,
                 },
             },
         });
@@ -39,15 +39,37 @@ let AppController = class AppController {
     async cadastrar_habito(data) {
         const calendarioExistente = await this.prisma.calendario.findFirst({
             where: {
-                dia: data.dia,
+                data_inicio: data.data_inicio,
             },
         });
+        let iconeId = null;
+        let iconeBase64 = '';
+        if (data.icone_nome) {
+            const iconeExistente = await this.prisma.icone.findFirst({
+                where: {
+                    nome: data.icone_nome,
+                },
+            });
+            if (iconeExistente) {
+                iconeId = iconeExistente.id;
+                iconeBase64 = iconeExistente.url;
+            }
+        }
         if (calendarioExistente) {
             const novaTarefa = await this.prisma.tarefa.create({
                 data: {
-                    tarefa: data.tarefa,
+                    nome_tarefa: data.nome_tarefa,
+                    descricao: data.descricao,
                     status: data.status,
                     calendario: { connect: { id: calendarioExistente.id } },
+                    icone: { connect: { id: iconeId } },
+                    iconeBase64: iconeBase64,
+                    data_inicio: data.data_inicio,
+                    data_fim: data.data_fim,
+                    hora_inicio: data.hora_inicio,
+                    hora_fim: data.hora_fim,
+                    repetir: data.repetir,
+                    notificacao: data.notificacao,
                 },
             });
             return {
@@ -57,14 +79,23 @@ let AppController = class AppController {
         else {
             const task = await this.prisma.calendario.create({
                 data: {
-                    dia: data.dia,
+                    data_inicio: data.data_inicio,
                 },
             });
             const novaTarefa = await this.prisma.tarefa.create({
                 data: {
-                    tarefa: data.tarefa,
+                    nome_tarefa: data.nome_tarefa,
+                    descricao: data.descricao,
                     status: data.status,
                     calendario: { connect: { id: task.id } },
+                    icone: { connect: { id: iconeId } },
+                    iconeBase64: iconeBase64,
+                    data_inicio: data.data_inicio,
+                    data_fim: data.data_fim,
+                    hora_inicio: data.hora_inicio,
+                    hora_fim: data.hora_fim,
+                    repetir: data.repetir,
+                    notificacao: data.notificacao,
                 },
             });
             return {

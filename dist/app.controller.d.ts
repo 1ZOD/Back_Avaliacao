@@ -7,19 +7,37 @@ export declare class AppController {
     constructor(appService: AppService, prisma: PrismaService);
     empty_page(): Promise<string>;
     buscarItensPorDia2(body: {
-        dia: string;
+        data_inicio: string;
     }): Promise<{
         id: number;
-        tarefa: string;
-        data_id: number;
+        nome_tarefa: string;
+        descricao: string;
         status: string;
+        data_id: number;
+        iconeId: number;
+        iconeBase64: string;
+        data_inicio: string;
+        data_fim: string;
+        hora_inicio: string;
+        hora_fim: string;
+        repetir: string;
+        notificacao: string;
     }[]>;
     cadastrar_habito(data: Cadastrar_habito): Promise<{
         novaTarefa: {
             id: number;
-            tarefa: string;
-            data_id: number;
+            nome_tarefa: string;
+            descricao: string;
             status: string;
+            data_id: number;
+            iconeId: number;
+            iconeBase64: string;
+            data_inicio: string;
+            data_fim: string;
+            hora_inicio: string;
+            hora_fim: string;
+            repetir: string;
+            notificacao: string;
         };
     }>;
     excluirTarefaPorDia(dia: string, id: string): Promise<{

@@ -1,6 +1,6 @@
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  url = env("DATABASE_URL")
 }
 
 generator client {
@@ -8,19 +8,36 @@ generator client {
 }
 
 model Calendario {
-  id    Int     @id @default(autoincrement())
-  dia   String
+  id Int @id @default(autoincrement())
+  data_inicio String
   tarefas Tarefa[]
   @@map("calendario")
 }
 
 model Tarefa {
-  id      Int     @id @default(autoincrement())
-  tarefa  String
-  data_id Int 
-  status  String
+  id Int @id @default(autoincrement())
+  nome_tarefa String
+  descricao String
+  status String
+  data_id Int
   calendario Calendario @relation(fields: [data_id], references: [id])
+  icone Icone? @relation(fields: [iconeId], references: [id])
+  iconeId Int?
+  iconeBase64 String?
+  data_inicio String
+  data_fim String
+  hora_inicio String
+  hora_fim String
+  repetir String
+  notificacao String
   @@map("tarefa")
 }
 
 
+model Icone {
+  id Int @id @default(autoincrement())
+  nome String
+  url String
+  tarefas Tarefa[]
+  @@map("icone")
+}
