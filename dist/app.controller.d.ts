@@ -23,6 +23,11 @@ export declare class AppController {
         repetir: string;
         notificacao: string;
     }[]>;
+    getAllIcones(): Promise<{
+        id: number;
+        nome: string;
+        url: string;
+    }[]>;
     cadastrar_habito(data: Cadastrar_habito): Promise<{
         novaTarefa: {
             id: number;

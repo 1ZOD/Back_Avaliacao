@@ -36,6 +36,10 @@ let AppController = class AppController {
         });
         return itensDoDia;
     }
+    async getAllIcones() {
+        const icones = await this.prisma.icone.findMany();
+        return icones;
+    }
     async cadastrar_habito(data) {
         const calendarioExistente = await this.prisma.calendario.findFirst({
             where: {
@@ -139,6 +143,12 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], AppController.prototype, "buscarItensPorDia2", null);
+__decorate([
+    (0, common_1.Get)('icons'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], AppController.prototype, "getAllIcones", null);
 __decorate([
     (0, common_1.Post)('cadastrar_habito'),
     __param(0, (0, common_1.Body)()),

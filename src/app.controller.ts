@@ -28,6 +28,12 @@ export class AppController {
     return itensDoDia;
   }
 
+  @Get('icons')
+  async getAllIcones() {
+    const icones = await this.prisma.icone.findMany();
+    return icones;
+  }
+
   @Post('cadastrar_habito')
   async cadastrar_habito(@Body() data: Cadastrar_habito) {
     const calendarioExistente = await this.prisma.calendario.findFirst({
@@ -74,7 +80,6 @@ export class AppController {
         novaTarefa,
       };
     } else {
-      // Criar um novo calendário usando o dia de início
       const task = await this.prisma.calendario.create({
         data: {
           data_inicio: data.data_inicio,
