@@ -107,26 +107,57 @@ let AppController = class AppController {
             };
         }
     }
-    async excluirTarefaPorDia(requestBody) {
-        const { dia, id } = requestBody;
-        const numeroDoDia = parseInt(dia);
-        const numeroDoId = parseInt(id);
-        if (isNaN(numeroDoDia) || isNaN(numeroDoId)) {
-            throw new Error('Dia ou ID inválido.');
+    async excluirTarefasPorDia(requestBody) {
+        if ('dias' in requestBody && 'ids' in requestBody) {
+            const { dias, ids } = requestBody;
+            if (dias.length === ids.length) {
+                const numerosDosDias = dias.map((dia) => parseInt(dia));
+                const numerosDosIds = ids.map((id) => parseInt(id));
+                if (numerosDosDias.some(isNaN) || numerosDosIds.some(isNaN)) {
+                    throw new Error('Dia ou ID inválido.');
+                }
+                try {
+                    for (let i = 0; i < numerosDosDias.length; i++) {
+                        await this.prisma.tarefa.delete({
+                            where: {
+                                id: numerosDosIds[i],
+                            },
+                        });
+                    }
+                    return { message: 'Tarefas excluídas com sucesso' };
+                }
+                catch (error) {
+                    return {
+                        error: 'Erro ao excluir as tarefas',
+                        message: 'Tarefas não encontradas',
+                    };
+                }
+            }
+            else {
+                throw new Error('Número de dias e IDs não corresponde.');
+            }
         }
-        try {
-            await this.prisma.tarefa.delete({
-                where: {
-                    id: numeroDoId,
-                },
-            });
-            return { message: 'Tarefa excluída com sucesso' };
-        }
-        catch (error) {
-            return {
-                error: 'Erro ao excluir a tarefa',
-                message: 'Tarefa não encontrada',
-            };
+        else {
+            const { dia, id } = requestBody;
+            const numeroDoDia = parseInt(dia);
+            const numeroDoId = parseInt(id);
+            if (isNaN(numeroDoDia) || isNaN(numeroDoId)) {
+                throw new Error('Dia ou ID inválido.');
+            }
+            try {
+                await this.prisma.tarefa.delete({
+                    where: {
+                        id: numeroDoId,
+                    },
+                });
+                return { message: 'Tarefa excluída com sucesso' };
+            }
+            catch (error) {
+                return {
+                    error: 'Erro ao excluir a tarefa',
+                    message: 'Tarefa não encontrada',
+                };
+            }
         }
     }
 };
@@ -163,7 +194,7 @@ __decorate([
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
-], AppController.prototype, "excluirTarefaPorDia", null);
+], AppController.prototype, "excluirTarefasPorDia", null);
 exports.AppController = AppController = __decorate([
     (0, common_1.Controller)(),
     __metadata("design:paramtypes", [app_service_1.AppService,

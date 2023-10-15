@@ -108,29 +108,69 @@ export class AppController {
       };
     }
   }
-
   @Post('excluir')
-  async excluirTarefaPorDia(@Body() requestBody: { dia: string; id: string }) {
-    const { dia, id } = requestBody;
-    const numeroDoDia = parseInt(dia);
-    const numeroDoId = parseInt(id);
+  async excluirTarefasPorDia(
+    @Body()
+    requestBody:
+      | { dias: string[]; ids: string[] }
+      | { dia: string; id: string },
+  ) {
+    if ('dias' in requestBody && 'ids' in requestBody) {
+      // Exclusão de vários dias e IDs
+      const { dias, ids } = requestBody as { dias: string[]; ids: string[] };
 
-    if (isNaN(numeroDoDia) || isNaN(numeroDoId)) {
-      throw new Error('Dia ou ID inválido.');
-    }
+      if (dias.length === ids.length) {
+        const numerosDosDias = dias.map((dia) => parseInt(dia));
+        const numerosDosIds = ids.map((id) => parseInt(id));
 
-    try {
-      await this.prisma.tarefa.delete({
-        where: {
-          id: numeroDoId,
-        },
-      });
-      return { message: 'Tarefa excluída com sucesso' };
-    } catch (error) {
-      return {
-        error: 'Erro ao excluir a tarefa',
-        message: 'Tarefa não encontrada',
-      };
+        if (numerosDosDias.some(isNaN) || numerosDosIds.some(isNaN)) {
+          throw new Error('Dia ou ID inválido.');
+        }
+
+        try {
+          for (let i = 0; i < numerosDosDias.length; i++) {
+            await this.prisma.tarefa.delete({
+              where: {
+                id: numerosDosIds[i],
+              },
+            });
+          }
+
+          return { message: 'Tarefas excluídas com sucesso' };
+        } catch (error) {
+          return {
+            error: 'Erro ao excluir as tarefas',
+            message: 'Tarefas não encontradas',
+          };
+        }
+      } else {
+        throw new Error('Número de dias e IDs não corresponde.');
+      }
+    } else {
+      // Exclusão de um único dia e ID
+      const { dia, id } = requestBody as { dia: string; id: string };
+
+      const numeroDoDia = parseInt(dia);
+      const numeroDoId = parseInt(id);
+
+      if (isNaN(numeroDoDia) || isNaN(numeroDoId)) {
+        throw new Error('Dia ou ID inválido.');
+      }
+
+      try {
+        await this.prisma.tarefa.delete({
+          where: {
+            id: numeroDoId,
+          },
+        });
+
+        return { message: 'Tarefa excluída com sucesso' };
+      } catch (error) {
+        return {
+          error: 'Erro ao excluir a tarefa',
+          message: 'Tarefa não encontrada',
+        };
+      }
     }
   }
 }
