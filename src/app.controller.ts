@@ -37,16 +37,18 @@ export class AppController {
     });
 
     let iconeId: number | null = null;
+    let iconeBase64 = '';
 
-    if (data.iconeBase64) {
+    if (data.icone_nome) {
       const iconeExistente = await this.prisma.icone.findFirst({
         where: {
-          url: data.iconeBase64,
+          nome: data.icone_nome,
         },
       });
 
       if (iconeExistente) {
         iconeId = iconeExistente.id;
+        iconeBase64 = iconeExistente.url;
       }
     }
 
@@ -57,7 +59,7 @@ export class AppController {
           status: data.status,
           calendario: { connect: { id: calendarioExistente.id } },
           icone: { connect: { id: iconeId } },
-          iconeBase64: data.iconeBase64,
+          iconeBase64: iconeBase64,
         },
       });
 
@@ -77,7 +79,7 @@ export class AppController {
           status: data.status,
           calendario: { connect: { id: task.id } },
           icone: { connect: { id: iconeId } },
-          iconeBase64: data.iconeBase64,
+          iconeBase64: iconeBase64,
         },
       });
 
