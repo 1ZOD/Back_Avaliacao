@@ -13,6 +13,8 @@ export declare class AppController {
         tarefa: string;
         data_id: number;
         status: string;
+        iconeId: number;
+        iconeBase64: string;
     }[]>;
     cadastrar_habito(data: Cadastrar_habito): Promise<{
         novaTarefa: {
@@ -20,6 +22,8 @@ export declare class AppController {
             tarefa: string;
             data_id: number;
             status: string;
+            iconeId: number;
+            iconeBase64: string;
         };
     }>;
     excluirTarefaPorDia(dia: string, id: string): Promise<{

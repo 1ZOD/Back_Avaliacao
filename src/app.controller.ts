@@ -36,12 +36,28 @@ export class AppController {
       },
     });
 
+    let iconeId: number | null = null;
+
+    if (data.iconeBase64) {
+      const iconeExistente = await this.prisma.icone.findFirst({
+        where: {
+          url: data.iconeBase64,
+        },
+      });
+
+      if (iconeExistente) {
+        iconeId = iconeExistente.id;
+      }
+    }
+
     if (calendarioExistente) {
       const novaTarefa = await this.prisma.tarefa.create({
         data: {
           tarefa: data.tarefa,
           status: data.status,
           calendario: { connect: { id: calendarioExistente.id } },
+          icone: { connect: { id: iconeId } },
+          iconeBase64: data.iconeBase64,
         },
       });
 
@@ -60,6 +76,8 @@ export class AppController {
           tarefa: data.tarefa,
           status: data.status,
           calendario: { connect: { id: task.id } },
+          icone: { connect: { id: iconeId } },
+          iconeBase64: data.iconeBase64,
         },
       });
 
