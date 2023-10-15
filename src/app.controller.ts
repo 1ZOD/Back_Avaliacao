@@ -16,12 +16,12 @@ export class AppController {
   }
 
   @Post('dia')
-  async buscarItensPorDia2(@Body() body: { dia: string }) {
-    const dia = body.dia;
+  async buscarItensPorDia2(@Body() body: { data_inicio: string }) {
+    const data_inicio = body.data_inicio;
     const itensDoDia = await this.prisma.tarefa.findMany({
       where: {
         calendario: {
-          dia: dia,
+          data_inicio: data_inicio,
         },
       },
     });
@@ -32,7 +32,7 @@ export class AppController {
   async cadastrar_habito(@Body() data: Cadastrar_habito) {
     const calendarioExistente = await this.prisma.calendario.findFirst({
       where: {
-        dia: data.dia,
+        data_inicio: data.data_inicio,
       },
     });
 
@@ -55,11 +55,18 @@ export class AppController {
     if (calendarioExistente) {
       const novaTarefa = await this.prisma.tarefa.create({
         data: {
-          tarefa: data.tarefa,
+          nome_tarefa: data.nome_tarefa,
+          descricao: data.descricao,
           status: data.status,
           calendario: { connect: { id: calendarioExistente.id } },
           icone: { connect: { id: iconeId } },
           iconeBase64: iconeBase64,
+          data_inicio: data.data_inicio,
+          data_fim: data.data_fim,
+          hora_inicio: data.hora_inicio,
+          hora_fim: data.hora_fim,
+          repetir: data.repetir,
+          notificacao: data.notificacao,
         },
       });
 
@@ -67,19 +74,27 @@ export class AppController {
         novaTarefa,
       };
     } else {
+      // Criar um novo calendário usando o dia de início
       const task = await this.prisma.calendario.create({
         data: {
-          dia: data.dia,
+          data_inicio: data.data_inicio,
         },
       });
 
       const novaTarefa = await this.prisma.tarefa.create({
         data: {
-          tarefa: data.tarefa,
+          nome_tarefa: data.nome_tarefa,
+          descricao: data.descricao,
           status: data.status,
           calendario: { connect: { id: task.id } },
           icone: { connect: { id: iconeId } },
           iconeBase64: iconeBase64,
+          data_inicio: data.data_inicio,
+          data_fim: data.data_fim,
+          hora_inicio: data.hora_inicio,
+          hora_fim: data.hora_fim,
+          repetir: data.repetir,
+          notificacao: data.notificacao,
         },
       });
 
