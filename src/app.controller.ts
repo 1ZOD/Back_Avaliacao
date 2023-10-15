@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body } from '@nestjs/common';
 import { AppService } from './app.service';
 import { PrismaService } from './database/prisma.service';
 import { Cadastrar_habito } from './model/controller_model';
@@ -109,17 +109,16 @@ export class AppController {
     }
   }
 
-  @Delete('excluir/:dia/:id')
-  async excluirTarefaPorDia(
-    @Param('dia') dia: string,
-    @Param('id') id: string,
-  ) {
+  @Post('excluir')
+  async excluirTarefaPorDia(@Body() requestBody: { dia: string; id: string }) {
+    const { dia, id } = requestBody;
     const numeroDoDia = parseInt(dia);
     const numeroDoId = parseInt(id);
 
     if (isNaN(numeroDoDia) || isNaN(numeroDoId)) {
       throw new Error('Dia ou ID inválido.');
     }
+
     try {
       await this.prisma.tarefa.delete({
         where: {

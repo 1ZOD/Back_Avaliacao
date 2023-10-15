@@ -45,7 +45,10 @@ export declare class AppController {
             notificacao: string;
         };
     }>;
-    excluirTarefaPorDia(dia: string, id: string): Promise<{
+    excluirTarefaPorDia(requestBody: {
+        dia: string;
+        id: string;
+    }): Promise<{
         message: string;
         error?: undefined;
     } | {

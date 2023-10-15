@@ -107,7 +107,8 @@ let AppController = class AppController {
             };
         }
     }
-    async excluirTarefaPorDia(dia, id) {
+    async excluirTarefaPorDia(requestBody) {
+        const { dia, id } = requestBody;
         const numeroDoDia = parseInt(dia);
         const numeroDoId = parseInt(id);
         if (isNaN(numeroDoDia) || isNaN(numeroDoId)) {
@@ -157,11 +158,10 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AppController.prototype, "cadastrar_habito", null);
 __decorate([
-    (0, common_1.Delete)('excluir/:dia/:id'),
-    __param(0, (0, common_1.Param)('dia')),
-    __param(1, (0, common_1.Param)('id')),
+    (0, common_1.Post)('excluir'),
+    __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], AppController.prototype, "excluirTarefaPorDia", null);
 exports.AppController = AppController = __decorate([
