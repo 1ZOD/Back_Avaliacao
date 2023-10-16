@@ -249,7 +249,10 @@ export class AppController {
     };
   }
   @Put('concluir_habito/:id')
-  async concluirHabito(@Param('id') id: string) {
+  async concluirHabito(
+    @Param('id') id: string,
+    @Body() data: { status: string },
+  ) {
     const habitoExistente = await this.prisma.tarefa.findFirst({
       where: {
         id: Number(id),
@@ -264,12 +267,35 @@ export class AppController {
     const habit = await this.prisma.tarefa.update({
       where: { id: Number(id) },
       data: {
-        status: 'concluido',
+        status: data.status,
       },
     });
 
     return {
       habit,
+    };
+  }
+
+  @Post('contagem')
+  async contarTarefas(@Body() data: { data: string }) {
+    const { data: dataParaContagem } = data;
+
+    const tarefasNoDia = await this.prisma.tarefa.count({
+      where: {
+        data_inicio: dataParaContagem,
+      },
+    });
+
+    const tarefasConcluidasNoDia = await this.prisma.tarefa.count({
+      where: {
+        data_inicio: dataParaContagem,
+        status: 'concluido',
+      },
+    });
+
+    return {
+      totalTarefas: tarefasNoDia,
+      tarefasConcluidas: tarefasConcluidasNoDia,
     };
   }
 }

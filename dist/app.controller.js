@@ -224,7 +224,7 @@ let AppController = class AppController {
             habit,
         };
     }
-    async concluirHabito(id) {
+    async concluirHabito(id, data) {
         const habitoExistente = await this.prisma.tarefa.findFirst({
             where: {
                 id: Number(id),
@@ -238,11 +238,29 @@ let AppController = class AppController {
         const habit = await this.prisma.tarefa.update({
             where: { id: Number(id) },
             data: {
-                status: 'concluído',
+                status: data.status,
             },
         });
         return {
             habit,
+        };
+    }
+    async contarTarefas(data) {
+        const { data: dataParaContagem } = data;
+        const tarefasNoDia = await this.prisma.tarefa.count({
+            where: {
+                data_inicio: dataParaContagem,
+            },
+        });
+        const tarefasConcluidasNoDia = await this.prisma.tarefa.count({
+            where: {
+                data_inicio: dataParaContagem,
+                status: 'concluido',
+            },
+        });
+        return {
+            totalTarefas: tarefasNoDia,
+            tarefasConcluidas: tarefasConcluidasNoDia,
         };
     }
 };
@@ -298,10 +316,18 @@ __decorate([
 __decorate([
     (0, common_1.Put)('concluir_habito/:id'),
     __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [String, Object]),
     __metadata("design:returntype", Promise)
 ], AppController.prototype, "concluirHabito", null);
+__decorate([
+    (0, common_1.Post)('contagem'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], AppController.prototype, "contarTarefas", null);
 exports.AppController = AppController = __decorate([
     (0, common_1.Controller)(),
     __metadata("design:paramtypes", [app_service_1.AppService,

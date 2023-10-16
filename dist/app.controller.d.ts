@@ -100,7 +100,9 @@ export declare class AppController {
         };
         error?: undefined;
     }>;
-    concluirHabito(id: string): Promise<{
+    concluirHabito(id: string, data: {
+        status: string;
+    }): Promise<{
         error: string;
         habit?: undefined;
     } | {
@@ -120,5 +122,11 @@ export declare class AppController {
             notificacao: string;
         };
         error?: undefined;
+    }>;
+    contarTarefas(data: {
+        data: string;
+    }): Promise<{
+        totalTarefas: number;
+        tarefasConcluidas: number;
     }>;
 }
