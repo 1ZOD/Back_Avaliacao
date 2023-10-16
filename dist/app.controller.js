@@ -160,6 +160,55 @@ let AppController = class AppController {
             }
         }
     }
+    async editarHabito(id, data) {
+        const habitoExistente = await this.prisma.tarefa.findFirst({
+            where: {
+                id: Number(id),
+            },
+        });
+        if (!habitoExistente) {
+            return {
+                error: 'Hábito não encontrado',
+            };
+        }
+        let iconeId = null;
+        let task = null;
+        if (data.icone_nome) {
+            const iconeExistente = await this.prisma.icone.findFirst({
+                where: {
+                    nome: data.icone_nome,
+                },
+            });
+            if (iconeExistente) {
+                iconeId = iconeExistente.id;
+            }
+        }
+        task = await this.prisma.calendario.findFirst({
+            where: {
+                data_inicio: data.data_inicio,
+            },
+        });
+        const habit = await this.prisma.tarefa.update({
+            where: { id: Number(id) },
+            data: {
+                nome_tarefa: data.nome_tarefa,
+                descricao: data.descricao,
+                status: data.status,
+                calendario: task ? { connect: { id: task.id } } : undefined,
+                icone: iconeId !== null ? { connect: { id: iconeId } } : undefined,
+                iconeBase64: data.iconeBase64,
+                data_inicio: data.data_inicio,
+                data_fim: data.data_fim,
+                hora_inicio: data.hora_inicio,
+                hora_fim: data.hora_fim,
+                repetir: data.repetir,
+                notificacao: data.notificacao,
+            },
+        });
+        return {
+            habit,
+        };
+    }
 };
 exports.AppController = AppController;
 __decorate([
@@ -195,6 +244,14 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], AppController.prototype, "excluirTarefasPorDia", null);
+__decorate([
+    (0, common_1.Put)('habit/:id'),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, controller_model_1.Cadastrar_habito]),
+    __metadata("design:returntype", Promise)
+], AppController.prototype, "editarHabito", null);
 exports.AppController = AppController = __decorate([
     (0, common_1.Controller)(),
     __metadata("design:paramtypes", [app_service_1.AppService,

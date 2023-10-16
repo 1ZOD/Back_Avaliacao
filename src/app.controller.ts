@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body } from '@nestjs/common';
+import { Controller, Get, Post, Body, Put, Param } from '@nestjs/common';
 import { AppService } from './app.service';
 import { PrismaService } from './database/prisma.service';
 import { Cadastrar_habito } from './model/controller_model';
@@ -116,7 +116,6 @@ export class AppController {
       | { dia: string; id: string },
   ) {
     if ('dias' in requestBody && 'ids' in requestBody) {
-      // Exclusão de vários dias e IDs
       const { dias, ids } = requestBody as { dias: string[]; ids: string[] };
 
       if (dias.length === ids.length) {
@@ -147,7 +146,6 @@ export class AppController {
         throw new Error('Número de dias e IDs não corresponde.');
       }
     } else {
-      // Exclusão de um único dia e ID
       const { dia, id } = requestBody as { dia: string; id: string };
 
       const numeroDoDia = parseInt(dia);
@@ -172,5 +170,63 @@ export class AppController {
         };
       }
     }
+  }
+
+  @Put('habit/:id')
+  async editarHabito(@Param('id') id: string, @Body() data: Cadastrar_habito) {
+    const habitoExistente = await this.prisma.tarefa.findFirst({
+      where: {
+        id: Number(id),
+      },
+    });
+
+    if (!habitoExistente) {
+      return {
+        error: 'Hábito não encontrado',
+      };
+    }
+
+    let iconeId: number | null = null;
+    let task = null;
+
+    if (data.icone_nome) {
+      const iconeExistente = await this.prisma.icone.findFirst({
+        where: {
+          nome: data.icone_nome,
+        },
+      });
+
+      if (iconeExistente) {
+        iconeId = iconeExistente.id;
+      }
+    }
+
+    task = await this.prisma.calendario.findFirst({
+      where: {
+        data_inicio: data.data_inicio,
+      },
+    });
+
+    const habit = await this.prisma.tarefa.update({
+      where: { id: Number(id) },
+      data: {
+        nome_tarefa: data.nome_tarefa,
+        descricao: data.descricao,
+        status: data.status,
+        calendario: task ? { connect: { id: task.id } } : undefined,
+        icone: iconeId !== null ? { connect: { id: iconeId } } : undefined,
+        iconeBase64: data.iconeBase64,
+        data_inicio: data.data_inicio,
+        data_fim: data.data_fim,
+        hora_inicio: data.hora_inicio,
+        hora_fim: data.hora_fim,
+        repetir: data.repetir,
+        notificacao: data.notificacao,
+      },
+    });
+
+    return {
+      habit,
+    };
   }
 }

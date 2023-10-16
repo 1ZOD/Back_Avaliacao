@@ -58,4 +58,25 @@ export declare class AppController {
         error: string;
         message: string;
     }>;
+    editarHabito(id: string, data: Cadastrar_habito): Promise<{
+        error: string;
+        habit?: undefined;
+    } | {
+        habit: {
+            id: number;
+            nome_tarefa: string;
+            descricao: string;
+            status: string;
+            data_id: number;
+            iconeId: number;
+            iconeBase64: string;
+            data_inicio: string;
+            data_fim: string;
+            hora_inicio: string;
+            hora_fim: string;
+            repetir: string;
+            notificacao: string;
+        };
+        error?: undefined;
+    }>;
 }
