@@ -209,6 +209,42 @@ let AppController = class AppController {
             habit,
         };
     }
+    async getHabit(id) {
+        const habit = await this.prisma.tarefa.findFirst({
+            where: {
+                id: Number(id),
+            },
+        });
+        if (!habit) {
+            return {
+                error: 'Hábito não encontrado',
+            };
+        }
+        return {
+            habit,
+        };
+    }
+    async concluirHabito(id) {
+        const habitoExistente = await this.prisma.tarefa.findFirst({
+            where: {
+                id: Number(id),
+            },
+        });
+        if (!habitoExistente) {
+            return {
+                error: 'Hábito não encontrado',
+            };
+        }
+        const habit = await this.prisma.tarefa.update({
+            where: { id: Number(id) },
+            data: {
+                status: 'concluído',
+            },
+        });
+        return {
+            habit,
+        };
+    }
 };
 exports.AppController = AppController;
 __decorate([
@@ -252,6 +288,20 @@ __decorate([
     __metadata("design:paramtypes", [String, controller_model_1.Cadastrar_habito]),
     __metadata("design:returntype", Promise)
 ], AppController.prototype, "editarHabito", null);
+__decorate([
+    (0, common_1.Get)('get_habit/:id'),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], AppController.prototype, "getHabit", null);
+__decorate([
+    (0, common_1.Put)('concluir_habito/:id'),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], AppController.prototype, "concluirHabito", null);
 exports.AppController = AppController = __decorate([
     (0, common_1.Controller)(),
     __metadata("design:paramtypes", [app_service_1.AppService,

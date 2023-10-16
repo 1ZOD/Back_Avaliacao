@@ -79,4 +79,46 @@ export declare class AppController {
         };
         error?: undefined;
     }>;
+    getHabit(id: string): Promise<{
+        error: string;
+        habit?: undefined;
+    } | {
+        habit: {
+            id: number;
+            nome_tarefa: string;
+            descricao: string;
+            status: string;
+            data_id: number;
+            iconeId: number;
+            iconeBase64: string;
+            data_inicio: string;
+            data_fim: string;
+            hora_inicio: string;
+            hora_fim: string;
+            repetir: string;
+            notificacao: string;
+        };
+        error?: undefined;
+    }>;
+    concluirHabito(id: string): Promise<{
+        error: string;
+        habit?: undefined;
+    } | {
+        habit: {
+            id: number;
+            nome_tarefa: string;
+            descricao: string;
+            status: string;
+            data_id: number;
+            iconeId: number;
+            iconeBase64: string;
+            data_inicio: string;
+            data_fim: string;
+            hora_inicio: string;
+            hora_fim: string;
+            repetir: string;
+            notificacao: string;
+        };
+        error?: undefined;
+    }>;
 }

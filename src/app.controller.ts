@@ -229,4 +229,47 @@ export class AppController {
       habit,
     };
   }
+
+  @Get('get_habit/:id')
+  async getHabit(@Param('id') id: string) {
+    const habit = await this.prisma.tarefa.findFirst({
+      where: {
+        id: Number(id),
+      },
+    });
+
+    if (!habit) {
+      return {
+        error: 'Hábito não encontrado',
+      };
+    }
+
+    return {
+      habit,
+    };
+  }
+  @Put('concluir_habito/:id')
+  async concluirHabito(@Param('id') id: string) {
+    const habitoExistente = await this.prisma.tarefa.findFirst({
+      where: {
+        id: Number(id),
+      },
+    });
+
+    if (!habitoExistente) {
+      return {
+        error: 'Hábito não encontrado',
+      };
+    }
+    const habit = await this.prisma.tarefa.update({
+      where: { id: Number(id) },
+      data: {
+        status: 'concluido',
+      },
+    });
+
+    return {
+      habit,
+    };
+  }
 }
