@@ -25,7 +25,7 @@ npx prisma migrate dev --name init
 
 ## ° Passo
 Adicionar a seguinte query na ultima linha desse arquivo.
-
+[Link para a query](aaa.txt)
 
 
 ```sh
