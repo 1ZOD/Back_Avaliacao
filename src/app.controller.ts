@@ -108,67 +108,42 @@ export class AppController {
       };
     }
   }
-  @Post('excluir')
-  async excluirTarefasPorDia(
-    @Body()
-    requestBody:
-      | { dias: string[]; ids: string[] }
-      | { dia: string; id: string },
-  ) {
-    if ('dias' in requestBody && 'ids' in requestBody) {
-      const { dias, ids } = requestBody as { dias: string[]; ids: string[] };
+  @Post('excluir-concluidas')
+  async excluirTarefasConcluidas(@Body() requestBody: { dia: string }) {
+    const { dia } = requestBody;
 
-      if (dias.length === ids.length) {
-        const numerosDosDias = dias.map((dia) => parseInt(dia));
-        const numerosDosIds = ids.map((id) => parseInt(id));
-
-        if (numerosDosDias.some(isNaN) || numerosDosIds.some(isNaN)) {
-          throw new Error('Dia ou ID inválido.');
-        }
-
-        try {
-          for (let i = 0; i < numerosDosDias.length; i++) {
-            await this.prisma.tarefa.delete({
-              where: {
-                id: numerosDosIds[i],
-              },
-            });
-          }
-
-          return { message: 'Tarefas excluídas com sucesso' };
-        } catch (error) {
-          return {
-            error: 'Erro ao excluir as tarefas',
-            message: 'Tarefas não encontradas',
-          };
-        }
-      } else {
-        throw new Error('Número de dias e IDs não corresponde.');
-      }
-    } else {
-      const { dia, id } = requestBody as { dia: string; id: string };
-
-      const numeroDoDia = parseInt(dia);
-      const numeroDoId = parseInt(id);
-
-      if (isNaN(numeroDoDia) || isNaN(numeroDoId)) {
-        throw new Error('Dia ou ID inválido.');
-      }
-
-      try {
-        await this.prisma.tarefa.delete({
-          where: {
-            id: numeroDoId,
+    try {
+      const tarefasConcluidas = await this.prisma.tarefa.findMany({
+        where: {
+          status: {
+            equals: 'concluido', // Use equals para comparação sensível a maiúsculas/minúsculas
           },
-        });
+          data_inicio: dia,
+        },
+      });
 
-        return { message: 'Tarefa excluída com sucesso' };
-      } catch (error) {
+      if (tarefasConcluidas.length === 0) {
         return {
-          error: 'Erro ao excluir a tarefa',
-          message: 'Tarefa não encontrada',
+          message: 'Nenhuma tarefa concluída encontrada para exclusão.',
         };
       }
+
+      for (const tarefa of tarefasConcluidas) {
+        await this.prisma.tarefa.delete({
+          where: {
+            id: tarefa.id,
+          },
+        });
+      }
+
+      return {
+        message: 'Tarefas excluídas com sucesso.',
+      };
+    } catch (error) {
+      return {
+        error: 'Erro ao excluir as tarefas concluídas',
+        message: error.message, // opcional: incluir detalhes do erro
+      };
     }
   }
 

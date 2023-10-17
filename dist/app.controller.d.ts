@@ -45,18 +45,14 @@ export declare class AppController {
             notificacao: string;
         };
     }>;
-    excluirTarefasPorDia(requestBody: {
-        dias: string[];
-        ids: string[];
-    } | {
+    excluirTarefasConcluidas(requestBody: {
         dia: string;
-        id: string;
     }): Promise<{
         message: string;
         error?: undefined;
     } | {
         error: string;
-        message: string;
+        message: any;
     }>;
     editarHabito(id: string, data: Cadastrar_habito): Promise<{
         error: string;
