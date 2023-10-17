@@ -29,30 +29,18 @@ npx prisma migrate dev --name init
 ```
 
 ## 5° Passo
-Adicionar a seguinte query na ultima linha desse arquivo.
-[Link para a query](aaa.txt)
-
+Rodar o comando
 ```sh
-.prisma
-   migrations
-       20231017110714_init
-               migrations.sql <-
+npx prisma generate
 ```
 
 ## 6° Passo
-Rodar novamente o comando
-```sh
-npx prisma migrate dev --name init
-y
-```
-
-## 7° Passo
 Rodar o comando
 ```sh
 npm run start
 ```
 
-## 8° Passo (Opcional)
+## 7° Passo (Opcional)
 Rodar o comando em outro terminal
 ```sh
 npx prisma studio
