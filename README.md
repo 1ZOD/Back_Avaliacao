@@ -1,5 +1,8 @@
 # BackEnd-Universal
 
+## Descrição
+O projeto envolve a criação de um calendário que permite aos usuários adicionar tarefas em datas específicas. Além disso, oferece funcionalidades que permitem a exclusão, modificação e remoção das tarefas já inseridas.
+
 ## 1° Passo
 
 Ter o Node instalado em sua maquina
@@ -45,4 +48,10 @@ Rodar o comando em outro terminal
 ```sh
 npx prisma studio
 ```
+
+## 8° Dificuldades e impedimentos
+### A tela de home não foi finalizada por falta de tempo 
+### Existe um bug ao clicar em "Mark ALL" que não foi corrigido
+
+
 
