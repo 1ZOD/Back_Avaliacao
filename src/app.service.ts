@@ -99,7 +99,7 @@ export class AppService {
       const tarefasConcluidas = await this.prisma.tarefa.findMany({
         where: {
           status: {
-            equals: 'concluido', // Use equals para comparação sensível a maiúsculas/minúsculas
+            equals: 'concluido',
           },
           data_inicio: dia,
         },
@@ -125,7 +125,7 @@ export class AppService {
     } catch (error) {
       return {
         error: 'Erro ao excluir as tarefas concluídas',
-        message: error.message, // opcional: incluir detalhes do erro
+        message: error.message,
       };
     }
   }
@@ -147,14 +147,12 @@ export class AppService {
       }
     }
 
-    // Encontre o registro do calendário com base na nova data de início
     const calendarioNovo = await this.prisma.calendario.findFirst({
       where: {
         data_inicio: data.data_inicio,
       },
     });
 
-    // Crie um novo calendário se não existir
     if (!calendarioNovo) {
       const novoCalendario = await this.prisma.calendario.create({
         data: {
@@ -162,7 +160,6 @@ export class AppService {
         },
       });
       if (novoCalendario) {
-        // Use o ID do novo calendário para atualizar a tarefa
         const habit = await this.prisma.tarefa.update({
           where: { id: Number(id) },
           data: {
@@ -190,7 +187,6 @@ export class AppService {
       }
     }
 
-    // Encontre o calendário existente para o ID atual da tarefa
     const tarefaExistente = await this.prisma.tarefa.findUnique({
       where: {
         id: Number(id),
@@ -203,7 +199,6 @@ export class AppService {
       };
     }
 
-    // Use o ID do calendário encontrado (ou criado) para atualizar a tarefa
     const habit = await this.prisma.tarefa.update({
       where: { id: Number(id) },
       data: {
