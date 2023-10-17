@@ -50,8 +50,7 @@ npx prisma studio
 ```
 
 ## 8° Dificuldades e impedimentos
-### A tela de home não foi finalizada por falta de tempo 
-### Existe um bug ao clicar em "Mark ALL" que não foi corrigido
+### Primeira vez utilizando o FrameWork
 
 
 
