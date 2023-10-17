@@ -55,9 +55,6 @@ export declare class AppController {
         message: any;
     }>;
     editarHabito(data: Cadastrar_habito): Promise<{
-        error: string;
-        habit?: undefined;
-    } | {
         habit: {
             id: number;
             nome_tarefa: string;
@@ -74,6 +71,9 @@ export declare class AppController {
             notificacao: string;
         };
         error?: undefined;
+    } | {
+        error: string;
+        habit?: undefined;
     }>;
     getHabit(id: string): Promise<{
         error: string;

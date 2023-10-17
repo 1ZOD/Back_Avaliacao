@@ -149,23 +149,10 @@ export class AppController {
 
   @Put('habit')
   async editarHabito(@Body() data: Cadastrar_habito) {
-    const id = data.id; // Acesse o ID do corpo da solicitação
-
-    // Verifique se o hábito existe com o ID fornecido
-    const habitoExistente = await this.prisma.tarefa.findFirst({
-      where: {
-        id: Number(id),
-      },
-    });
-
-    if (!habitoExistente) {
-      return {
-        error: 'Hábito não encontrado',
-      };
-    }
+    // Obtenha o ID do hábito do corpo da solicitação
+    const id = data.id;
 
     let iconeId: number | null = null;
-    let task = null;
 
     if (data.icone_nome) {
       const iconeExistente = await this.prisma.icone.findFirst({
@@ -179,25 +166,76 @@ export class AppController {
       }
     }
 
-    task = await this.prisma.calendario.findFirst({
+    // Encontre o registro do calendário com base na nova data de início
+    const calendarioNovo = await this.prisma.calendario.findFirst({
       where: {
         data_inicio: data.data_inicio,
       },
     });
 
+    // Crie um novo calendário se não existir
+    if (!calendarioNovo) {
+      const novoCalendario = await this.prisma.calendario.create({
+        data: {
+          data_inicio: data.data_inicio,
+        },
+      });
+      if (novoCalendario) {
+        // Use o ID do novo calendário para atualizar a tarefa
+        const habit = await this.prisma.tarefa.update({
+          where: { id: Number(id) },
+          data: {
+            nome_tarefa: data.nome_tarefa,
+            descricao: data.descricao,
+            status: data.status,
+            calendario: { connect: { id: novoCalendario.id } },
+            icone: iconeId !== null ? { connect: { id: iconeId } } : undefined,
+            iconeBase64: data.iconeBase64,
+            data_inicio: data.data_inicio,
+            data_fim: data.data_fim,
+            hora_inicio: data.hora_inicio,
+            hora_fim: data.hora_inicio,
+            repetir: data.repetir,
+            notificacao: data.notificacao,
+          },
+        });
+        return {
+          habit,
+        };
+      } else {
+        return {
+          error: 'Erro ao criar novo calendário',
+        };
+      }
+    }
+
+    // Encontre o calendário existente para o ID atual da tarefa
+    const tarefaExistente = await this.prisma.tarefa.findUnique({
+      where: {
+        id: Number(id),
+      },
+    });
+
+    if (!tarefaExistente) {
+      return {
+        error: 'Hábito não encontrado',
+      };
+    }
+
+    // Use o ID do calendário encontrado (ou criado) para atualizar a tarefa
     const habit = await this.prisma.tarefa.update({
       where: { id: Number(id) },
       data: {
         nome_tarefa: data.nome_tarefa,
         descricao: data.descricao,
         status: data.status,
-        calendario: task ? { connect: { id: task.id } } : undefined,
+        calendario: { connect: { id: calendarioNovo.id } },
         icone: iconeId !== null ? { connect: { id: iconeId } } : undefined,
         iconeBase64: data.iconeBase64,
         data_inicio: data.data_inicio,
         data_fim: data.data_fim,
         hora_inicio: data.hora_inicio,
-        hora_fim: data.hora_fim,
+        hora_fim: data.hora_inicio,
         repetir: data.repetir,
         notificacao: data.notificacao,
       },

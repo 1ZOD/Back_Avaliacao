@@ -143,18 +143,7 @@ let AppController = class AppController {
     }
     async editarHabito(data) {
         const id = data.id;
-        const habitoExistente = await this.prisma.tarefa.findFirst({
-            where: {
-                id: Number(id),
-            },
-        });
-        if (!habitoExistente) {
-            return {
-                error: 'Hábito não encontrado',
-            };
-        }
         let iconeId = null;
-        let task = null;
         if (data.icone_nome) {
             const iconeExistente = await this.prisma.icone.findFirst({
                 where: {
@@ -165,24 +154,68 @@ let AppController = class AppController {
                 iconeId = iconeExistente.id;
             }
         }
-        task = await this.prisma.calendario.findFirst({
+        const calendarioNovo = await this.prisma.calendario.findFirst({
             where: {
                 data_inicio: data.data_inicio,
             },
         });
+        if (!calendarioNovo) {
+            const novoCalendario = await this.prisma.calendario.create({
+                data: {
+                    data_inicio: data.data_inicio,
+                },
+            });
+            if (novoCalendario) {
+                const habit = await this.prisma.tarefa.update({
+                    where: { id: Number(id) },
+                    data: {
+                        nome_tarefa: data.nome_tarefa,
+                        descricao: data.descricao,
+                        status: data.status,
+                        calendario: { connect: { id: novoCalendario.id } },
+                        icone: iconeId !== null ? { connect: { id: iconeId } } : undefined,
+                        iconeBase64: data.iconeBase64,
+                        data_inicio: data.data_inicio,
+                        data_fim: data.data_fim,
+                        hora_inicio: data.hora_inicio,
+                        hora_fim: data.hora_inicio,
+                        repetir: data.repetir,
+                        notificacao: data.notificacao,
+                    },
+                });
+                return {
+                    habit,
+                };
+            }
+            else {
+                return {
+                    error: 'Erro ao criar novo calendário',
+                };
+            }
+        }
+        const tarefaExistente = await this.prisma.tarefa.findUnique({
+            where: {
+                id: Number(id),
+            },
+        });
+        if (!tarefaExistente) {
+            return {
+                error: 'Hábito não encontrado',
+            };
+        }
         const habit = await this.prisma.tarefa.update({
             where: { id: Number(id) },
             data: {
                 nome_tarefa: data.nome_tarefa,
                 descricao: data.descricao,
                 status: data.status,
-                calendario: task ? { connect: { id: task.id } } : undefined,
+                calendario: { connect: { id: calendarioNovo.id } },
                 icone: iconeId !== null ? { connect: { id: iconeId } } : undefined,
                 iconeBase64: data.iconeBase64,
                 data_inicio: data.data_inicio,
                 data_fim: data.data_fim,
                 hora_inicio: data.hora_inicio,
-                hora_fim: data.hora_fim,
+                hora_fim: data.hora_inicio,
                 repetir: data.repetir,
                 notificacao: data.notificacao,
             },
