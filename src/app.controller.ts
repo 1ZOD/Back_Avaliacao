@@ -147,8 +147,11 @@ export class AppController {
     }
   }
 
-  @Put('habit/:id')
-  async editarHabito(@Param('id') id: string, @Body() data: Cadastrar_habito) {
+  @Put('habit')
+  async editarHabito(@Body() data: Cadastrar_habito) {
+    const id = data.id; // Acesse o ID do corpo da solicitação
+
+    // Verifique se o hábito existe com o ID fornecido
     const habitoExistente = await this.prisma.tarefa.findFirst({
       where: {
         id: Number(id),

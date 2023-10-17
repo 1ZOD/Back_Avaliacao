@@ -1,4 +1,5 @@
 export declare class Cadastrar_habito {
+    readonly id: string;
     readonly nome_tarefa: string;
     readonly descricao: string;
     readonly status: string;

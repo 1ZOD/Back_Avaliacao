@@ -131,7 +131,7 @@ let AppController = class AppController {
                 });
             }
             return {
-                message: 'Tarefas concluídas na data especificada excluídas com sucesso.',
+                message: 'Tarefas excluídas com sucesso.',
             };
         }
         catch (error) {
@@ -141,7 +141,8 @@ let AppController = class AppController {
             };
         }
     }
-    async editarHabito(id, data) {
+    async editarHabito(data) {
+        const id = data.id;
         const habitoExistente = await this.prisma.tarefa.findFirst({
             where: {
                 id: Number(id),
@@ -280,11 +281,10 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AppController.prototype, "excluirTarefasConcluidas", null);
 __decorate([
-    (0, common_1.Put)('habit/:id'),
-    __param(0, (0, common_1.Param)('id')),
-    __param(1, (0, common_1.Body)()),
+    (0, common_1.Put)('habit'),
+    __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, controller_model_1.Cadastrar_habito]),
+    __metadata("design:paramtypes", [controller_model_1.Cadastrar_habito]),
     __metadata("design:returntype", Promise)
 ], AppController.prototype, "editarHabito", null);
 __decorate([
