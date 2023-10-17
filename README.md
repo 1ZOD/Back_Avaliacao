@@ -51,3 +51,10 @@ Rodar o comando
 ```sh
 npm run start
 ```
+
+## 8° Passo (Opcional)
+Rodar o comando em outro terminal
+```sh
+npx prisma studio
+```
+
