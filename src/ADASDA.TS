@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from './database/prisma.service';
-import { Cadastrar, Cadastrar_habito } from './model/controller_model';
+import { Cadastrar_habito } from './model/controller_model';
 
 @Injectable()
 export class AppService {
@@ -20,81 +20,83 @@ export class AppService {
     return this.prisma.icone.findMany();
   }
 
-  async cadastrarHabito(data: Cadastrar) {
+  async cadastrarHabito(data: Cadastrar_habito) {
     const calendarioExistente = await this.prisma.calendario.findFirst({
-      where: {
-        data_inicio: data.data_inicio,
-      },
-    });
-
-    let iconeId: number | null = null;
-    let iconeBase64 = '';
-
-    if (data.icone_nome) {
-      const iconeExistente = await this.prisma.icone.findFirst({
         where: {
-          nome: data.icone_nome,
+          data_inicio: data.data_inicio,
         },
       });
-
-      if (iconeExistente) {
-        iconeId = iconeExistente.id;
-        iconeBase64 = iconeExistente.url;
+  
+      let iconeId: number | null = null;
+      let iconeBase64 = '';
+  
+      if (data.icone_nome) {
+        const iconeExistente = await this.prisma.icone.findFirst({
+          where: {
+            nome: data.icone_nome,
+          },
+        });
+  
+        if (iconeExistente) {
+          iconeId = iconeExistente.id;
+          iconeBase64 = iconeExistente.url;
+        }
       }
-    }
-
-    if (calendarioExistente) {
-      const novaTarefa = await this.prisma.tarefa.create({
-        data: {
-          nome_tarefa: data.nome_tarefa,
-          descricao: data.descricao,
-          status: data.status,
-          calendario: { connect: { id: calendarioExistente.id } },
-          icone: { connect: { id: iconeId } },
-          iconeBase64: iconeBase64,
-          data_inicio: data.data_inicio,
-          data_fim: data.data_fim,
-          hora_inicio: data.hora_inicio,
-          hora_fim: data.hora_fim,
-          repetir: data.repetir,
-          notificacao: data.notificacao,
-        },
-      });
-
-      return {
-        novaTarefa,
-      };
-    } else {
-      const task = await this.prisma.calendario.create({
-        data: {
-          data_inicio: data.data_inicio,
-        },
-      });
-
-      const novaTarefa = await this.prisma.tarefa.create({
-        data: {
-          nome_tarefa: data.nome_tarefa,
-          descricao: data.descricao,
-          status: data.status,
-          calendario: { connect: { id: task.id } },
-          icone: { connect: { id: iconeId } },
-          iconeBase64: iconeBase64,
-          data_inicio: data.data_inicio,
-          data_fim: data.data_fim,
-          hora_inicio: data.hora_inicio,
-          hora_fim: data.hora_fim,
-          repetir: data.repetir,
-          notificacao: data.notificacao,
-        },
-      });
-
-      return {
-        novaTarefa,
-      };
-    }
+  
+      if (calendarioExistente) {
+        const novaTarefa = await this.prisma.tarefa.create({
+          data: {
+            nome_tarefa: data.nome_tarefa,
+            descricao: data.descricao,
+            status: data.status,
+            calendario: { connect: { id: calendarioExistente.id } },
+            icone: { connect: { id: iconeId } },
+            iconeBase64: iconeBase64,
+            data_inicio: data.data_inicio,
+            data_fim: data.data_fim,
+            hora_inicio: data.hora_inicio,
+            hora_fim: data.hora_fim,
+            repetir: data.repetir,
+            notificacao: data.notificacao,
+          },
+        });
+  
+        return {
+          novaTarefa,
+        };
+      } else {
+        const task = await this.prisma.calendario.create({
+          data: {
+            data_inicio: data.data_inicio,
+          },
+        });
+  
+        const novaTarefa = await this.prisma.tarefa.create({
+          data: {
+            nome_tarefa: data.nome_tarefa,
+            descricao: data.descricao,
+            status: data.status,
+            calendario: { connect: { id: task.id } },
+            icone: { connect: { id: iconeId } },
+            iconeBase64: iconeBase64,
+            data_inicio: data.data_inicio,
+            data_fim: data.data_fim,
+            hora_inicio: data.hora_inicio,
+            hora_fim: data.hora_fim,
+            repetir: data.repetir,
+            notificacao: data.notificacao,
+          },
+        });
+  
+        return {
+          novaTarefa,
+        };
+      }
   }
 
   async excluirTarefasConcluidas(dia: string) {
+    const { dia } = requestBody;
+
     try {
       const tarefasConcluidas = await this.prisma.tarefa.findMany({
         where: {
@@ -229,47 +231,49 @@ export class AppService {
 
   async getHabit(id: string) {
     const habit = await this.prisma.tarefa.findFirst({
-      where: {
-        id: Number(id),
-      },
-    });
-
-    if (!habit) {
+        where: {
+          id: Number(id),
+        },
+      });
+  
+      if (!habit) {
+        return {
+          error: 'Hábito não encontrado',
+        };
+      }
+  
       return {
-        error: 'Hábito não encontrado',
+        habit,
       };
-    }
-
-    return {
-      habit,
-    };
   }
 
   async concluirHabito(id: string, data: { status: string }) {
     const habitoExistente = await this.prisma.tarefa.findFirst({
-      where: {
-        id: Number(id),
-      },
-    });
-
-    if (!habitoExistente) {
+        where: {
+          id: Number(id),
+        },
+      });
+  
+      if (!habitoExistente) {
+        return {
+          error: 'Hábito não encontrado',
+        };
+      }
+      const habit = await this.prisma.tarefa.update({
+        where: { id: Number(id) },
+        data: {
+          status: data.status,
+        },
+      });
+  
       return {
-        error: 'Hábito não encontrado',
+        habit,
       };
-    }
-    const habit = await this.prisma.tarefa.update({
-      where: { id: Number(id) },
-      data: {
-        status: data.status,
-      },
-    });
-
-    return {
-      habit,
-    };
   }
 
   async contarTarefas(dataParaContagem: string) {
+    const { data: dataParaContagem } = data;
+
     const tarefasNoDia = await this.prisma.tarefa.count({
       where: {
         data_inicio: dataParaContagem,
